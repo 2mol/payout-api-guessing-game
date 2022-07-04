@@ -15,27 +15,36 @@
   <main class="container">
     <hgroup>
       <h1>
-        Payout API demo
+        Guess the Something
       </h1>
       <h2>
-        Wave All-Hands
+        Payout API demo - Wave All-Hands 12-07-2022
       </h2>
     </hgroup>
 
+
     <article>
-      I'm a card!
-    </article>
-
-
     <form action="guess" method="POST">
-      <label for="name">Your name:</label><br>
-      <input type="text" id="name" name="name"><br>
+      <div class="grid">
+      <label for="name">
+        Your name:
+        <input type="text" id="name" name="name" required>
+      </label>
 
-      <label for="number">Your phone number:</label><br>
-      <input type="text" id="number" name="number"><br>
+      <label for="number">
+        Your phone number:
+        <input type="text" id="number" name="number" placeholder="+2212345678" required>
+      </label>
+      </div>
 
-      <button>Send my greetings</button>
+      <label for="guess">
+        Your guess:
+        <input type="text" id="guess" name="guess">
+      </label>
+
+      <input type="submit">
     </form>
+    </article>
 
   </main>
 </body>
