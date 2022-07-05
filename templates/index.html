@@ -5,7 +5,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href=data:, rel=icon>
-  <link rel="stylesheet" href="css/pico.min.css">
+  <link rel="stylesheet" href="static/pico.min.css">
+  <style>
+    html,
+    body {
+      min-height: 1vh;
+      background-color: rgb(91, 187, 241);
+    }
+
+    .qrcode {
+      background-image: url("static/qr.svg");
+      background-position: center;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+  </style>
   <title>
     Guessing game
   </title>
@@ -13,37 +27,41 @@
 
 <body>
   <main class="container">
-    <hgroup>
-      <h1>
-        Guess the Something
-      </h1>
-      <h2>
-        Payout API demo - Wave All-Hands 12-07-2022
-      </h2>
-    </hgroup>
+    <article class="grid">
+      <div>
+        <header>
+          <hgroup>
+            <h2>
+              Wave Payout API demo
+            </h2>
+            <h3>
+              Wave All-Hands 13. June 2022
+            </h3>
+          </hgroup>
+        </header>
 
+        <form action="guess" method="POST">
+          <label for="guess">
+            How many bla of blahs are there?
+            <input type="text" id="guess" name="guess" required>
+          </label>
 
-    <article>
-    <form action="guess" method="POST">
-      <div class="grid">
-      <label for="name">
-        Your name:
-        <input type="text" id="name" name="name" required>
-      </label>
+          <div class="grid">
+            <label for="name">
+              Your name:
+              <input type="text" id="name" name="name" required>
+            </label>
 
-      <label for="number">
-        Your phone number:
-        <input type="text" id="number" name="number" placeholder="+2212345678" required>
-      </label>
+            <label for="number">
+              Your phone number:
+              <input type="text" id="number" name="number" placeholder="+2212345678" required>
+            </label>
+          </div>
+
+          <input type="submit">
+        </form>
       </div>
-
-      <label for="guess">
-        Your guess:
-        <input type="text" id="guess" name="guess">
-      </label>
-
-      <input type="submit">
-    </form>
+      <div class="qrcode"></div>
     </article>
 
   </main>

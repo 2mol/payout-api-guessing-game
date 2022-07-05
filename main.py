@@ -11,7 +11,7 @@ TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates"))
 
 app = FastAPI()
 
-app.mount("/css", StaticFiles(directory="css"), name="css")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 async def root(request: Request) -> dict:
