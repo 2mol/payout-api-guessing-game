@@ -1,0 +1,12 @@
+html,
+body {
+  min-height: 1vh;
+  background-color: rgb(91, 187, 241);
+}
+
+.qrcode {
+  background-image: url("/static/qr.svg");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
