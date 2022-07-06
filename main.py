@@ -15,15 +15,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 async def root(request: Request) -> dict:
-    print("sasasa")
     return TEMPLATES.TemplateResponse(
         "index.html",
-        {
-            "request": request,
-        },
+        {},
     )
 
 @app.post("/guess")
 async def guess(name: str = Form(), number: str = Form()):
-    print("sasasa")
     return {"name": name, "number": number}
