@@ -26,6 +26,6 @@ async def root(request: Request) -> dict:
 @app.post("/guess")
 async def guess(guess: int = Form(), name: str = Form(), number: str = Form()):
     if guess == settings.correct_answer:
-        return "yes!!!"
+        return "CORRECT!!!"
     else:
         return f"no :( it was {settings.correct_answer}, but you gave {number}"
