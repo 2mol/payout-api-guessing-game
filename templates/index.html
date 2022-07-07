@@ -18,30 +18,32 @@
       <div>
         <header>
           <hgroup>
+            <h1>
+              Quiz
+            </h1>
             <h2>
-              Wave Payout API demo
+              Payout API demo, Wave All Hands 13. June 2022
             </h2>
-            <h3>
-              Wave All-Hands 13. June 2022
-            </h3>
           </hgroup>
         </header>
 
         <form action="guess" method="POST">
           <label for="guess">
-            How many bla of blahs are there?
-            <input type="text" id="guess" name="guess" required>
+            <u><strong>Question:</strong></u><br>
+            What is our current record of unique merchant payers?<br>
+            Quel est notre record actuel de payements marchands?
+            <input type="number" min=0 max=500000 step=1000 id="guess" name="guess" required>
           </label>
 
           <div class="grid">
             <label for="name">
-              Your name:
+              Your Name/Ton Nom:
               <input type="text" id="name" name="name" required>
             </label>
 
             <label for="number">
-              Your phone number:
-              <input type="text" id="number" name="number" placeholder="+2212345678" required>
+              Number/Numéro:
+              <input type="text" id="number" name="number" required>
             </label>
           </div>
 
