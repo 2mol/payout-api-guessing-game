@@ -46,17 +46,17 @@ async def root(request: Request) -> dict:
 @app.post("/")
 async def root(guess: int = Form(), name: str = Form(), number: str = Form()):
     if guess == settings.correct_answer:
-        response = send_money(
-            api_key = settings.api_key,
-            json_data = {
-                "currency": "XOF",
-                "receive_amount": settings.prize_amount,
-                "name": name,
-                "mobile": number,
-                "client_reference": "all hands api demo",
-            },
-        )
-        breakpoint()
+        # response = send_money(
+        #     api_key = settings.api_key,
+        #     json_data = {
+        #         "currency": "XOF",
+        #         "receive_amount": settings.prize_amount,
+        #         "name": name,
+        #         "mobile": number,
+        #         "client_reference": "all hands api demo",
+        #     },
+        # )
+
         return "CORRECT!!!"
     else:
         return f"no :( it was {settings.correct_answer}, but you gave {number}"
