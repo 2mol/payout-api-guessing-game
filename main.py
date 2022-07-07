@@ -1,3 +1,6 @@
+from typing import Dict
+
+import requests
 from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -9,12 +12,28 @@ BASE_PATH = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates"))
 
 class Settings(BaseSettings):
+    api_key: str
+    prize_amount: str
     correct_answer: int
 
 settings = Settings()
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+def send_money(api_key: str, json_data: Dict[str, str]):
+    headers = {
+        "authorization": f"Bearer {api_key}",
+        # Already added when you pass json= but not when you pass data=
+        # "content-type": "application/json",
+        "idempotency-key": "00b94729bf0c0c7f",
+    }
+
+    response = requests.post('https://api.wave.com/v1/payout', headers=headers, json=json_data)
+
+    return response
+
 
 @app.get("/")
 async def root(request: Request) -> dict:
@@ -23,9 +42,21 @@ async def root(request: Request) -> dict:
         {"request": request},
     )
 
-@app.post("/guess")
-async def guess(guess: int = Form(), name: str = Form(), number: str = Form()):
+
+@app.post("/")
+async def root(guess: int = Form(), name: str = Form(), number: str = Form()):
     if guess == settings.correct_answer:
+        response = send_money(
+            api_key = settings.api_key,
+            json_data = {
+                "currency": "XOF",
+                "receive_amount": settings.prize_amount,
+                "name": name,
+                "mobile": number,
+                "client_reference": "all hands api demo",
+            },
+        )
+        breakpoint()
         return "CORRECT!!!"
     else:
         return f"no :( it was {settings.correct_answer}, but you gave {number}"
