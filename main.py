@@ -1,8 +1,7 @@
-from fastapi import FastAPI, APIRouter, Query, HTTPException, Request, Form
+from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from typing import Optional, Any
 from pathlib import Path
 
 BASE_PATH = Path(__file__).resolve().parent
@@ -17,7 +16,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def root(request: Request) -> dict:
     return TEMPLATES.TemplateResponse(
         "index.html",
-        {},
+        {"request": request},
     )
 
 @app.post("/guess")
