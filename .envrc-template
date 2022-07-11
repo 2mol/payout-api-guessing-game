@@ -1,3 +1,5 @@
+layout python3
+
 export API_KEY="wave_sn_bla"
 export CORRECT_ANSWER=42
 export PRIZE_AMOUNT="1"
