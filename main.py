@@ -25,9 +25,9 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-def send_money(*, api_key: str, idempotency_key: str, json_data: Dict[str, str]):
+def send_money(*, idempotency_key: str, json_data: Dict[str, str]):
     headers = {
-        "authorization": f"Bearer {api_key}",
+        "authorization": f"Bearer {settings.api_key_sn}",
         # Already added when you pass json= but not when you pass data=
         # "content-type": "application/json",
         "idempotency-key": idempotency_key,
@@ -57,7 +57,6 @@ async def root(guess: int = Form(), name: str = Form(), number: str = Form()):
         return "invalid phone number"
     if settings.correct_answer_min <= guess <= settings.correct_answer_max:
         response = send_money(
-            api_key = settings.api_key,
             # Using the number as the idempotency key. This way the same
             # wallet can't receive money twice:
             idempotency_key=f_number,
