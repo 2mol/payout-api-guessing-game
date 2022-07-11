@@ -73,9 +73,10 @@ async def root_post(guess: int = Form(), name: str = Form(), number: str = Form(
             response_body = response.json()
             print(response_body)
             err_msg = response_body.get("code", "")
+            # TODO: handle case where you had correct answer, but were too slow to win.
             return f"sorry, something went wrong: {err_msg}"
         else:
             print(f"winner winner, chicken dinner: {name} - {f_number}")
-            return "CORRECT!!!"
+            return "You win :) Check your Wave app to see if you've received the money."
     else:
         return "wrong answer :("
