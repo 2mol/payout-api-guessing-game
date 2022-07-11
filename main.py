@@ -39,7 +39,7 @@ def send_money(*, idempotency_key: str, json_data: Dict[str, str]):
 
 
 @app.get("/")
-async def root(request: Request) -> dict:
+async def root_get(request: Request) -> dict:
     return TEMPLATES.TemplateResponse(
         "index.html",
         {"request": request},
@@ -47,7 +47,7 @@ async def root(request: Request) -> dict:
 
 
 @app.post("/")
-async def root(guess: int = Form(), name: str = Form(), number: str = Form()):
+async def root_post(guess: int = Form(), name: str = Form(), number: str = Form()):
     try:
         p_number = phonenumbers.parse(number)
         if not phonenumbers.is_valid_number(p_number):
