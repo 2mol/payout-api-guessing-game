@@ -1,5 +1,6 @@
 from typing import Dict
 
+import phonenumbers
 import requests
 from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
@@ -45,6 +46,13 @@ async def root(request: Request) -> dict:
 
 @app.post("/")
 async def root(guess: int = Form(), name: str = Form(), number: str = Form()):
+    try:
+        p_number = phonenumbers.parse(number)
+        if not phonenumbers.is_valid_number(p_number):
+            return "invalid phone number"
+        f_number = phonenumbers.format_number(p_number, phonenumbers.PhoneNumberFormat.E164)
+    except:
+        return "invalid phone number"
     if guess == settings.correct_answer:
         response = send_money(
             api_key = settings.api_key,
@@ -52,11 +60,11 @@ async def root(guess: int = Form(), name: str = Form(), number: str = Form()):
                 "currency": "XOF",
                 "receive_amount": settings.prize_amount,
                 "name": name,
-                "mobile": number,
+                "mobile": f_number,
                 "client_reference": "all hands api demo",
             },
         )
 
         return "CORRECT!!!"
     else:
-        return f"no :( it was {settings.correct_answer}, but you gave {number}"
+        return "wrong answer :("
