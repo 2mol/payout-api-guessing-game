@@ -13,9 +13,11 @@ BASE_PATH = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates"))
 
 class Settings(BaseSettings):
-    api_key: str
+    api_key_sn: str
+    api_key_ci: str
     prize_amount: str
-    correct_answer: int
+    correct_answer_min: int
+    correct_answer_max: int
 
 settings = Settings()
 app = FastAPI()
@@ -53,7 +55,7 @@ async def root(guess: int = Form(), name: str = Form(), number: str = Form()):
         f_number = phonenumbers.format_number(p_number, phonenumbers.PhoneNumberFormat.E164)
     except:
         return "invalid phone number"
-    if guess == settings.correct_answer:
+    if settings.correct_answer_min <= guess <= settings.correct_answer_max:
         response = send_money(
             api_key = settings.api_key,
             # Using the number as the idempotency key. This way the same

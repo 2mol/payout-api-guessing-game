@@ -1,5 +1,7 @@
 layout python3
 
-export API_KEY="wave_sn_bla"
-export CORRECT_ANSWER=42
+export API_KEY_SN="wave_sn_bla"
+export API_KEY_CI="wave_ci_bla"
+export CORRECT_ANSWER_MIN=42
+export CORRECT_ANSWER_MAX=42
 export PRIZE_AMOUNT="1"
