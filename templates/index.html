@@ -28,29 +28,29 @@
         </header>
 
         <form action="/" method="POST">
+          <h5>Question:</h5>
+          <ul>
+            <li>What is our current record of <b>unique merchant payers</b> in a single day?</li>
+            <li>Quel est notre record actuel de <b>paiements marchands uniques</b> dans une seule journée?</li>
+          </ul>
           <label for="guess">
-            <u><strong>Question:</strong></u><br>
-            <ul>
-
-              <li>What is our current record of <b>unique merchant payers</b> in a single day?</li>
-              <li>Quel est notre record actuel de <b>payements marchands uniques</b> dans une seule journée?</li>
-            </ul>
+            Your guess:
             <input type="number" min=0 max=1000000 id="guess" name="guess" required>
           </label>
 
           <div class="grid">
             <label for="name">
-              Your Name/Ton Nom:
+              Your Name:
               <input type="text" id="name" name="name" minlength="4" required>
             </label>
 
             <label for="number">
-              Number/Numéro:
-              <input type="tel" id="number" name="number" required>
+              Your mobile:
+              <input type="tel" id="number" name="number" value="+221" required>
             </label>
           </div>
 
-          <input type="submit">
+          <input type="submit" value="Submit / Soumettre">
         </form>
       </div>
       <!-- <div class="qrcode" style="border-radius: 0.25rem; border-width: 4px; border-color: rgb(0, 0, 0);"></div> -->
