@@ -70,8 +70,13 @@ async def root(guess: int = Form(), name: str = Form(), number: str = Form()):
             },
         )
 
-        print(response.json())
-
-        return "CORRECT!!!"
+        if not response.ok:
+            response_body = response.json()
+            print(response_body)
+            err_msg = response_body.get("code", "")
+            return f"sorry, something went wrong: {err_msg}"
+        else:
+            print(f"winner winner, chicken dinner: {name} - {f_number}")
+            return "CORRECT!!!"
     else:
         return "wrong answer :("
