@@ -65,6 +65,8 @@ async def root(guess: int = Form(), name: str = Form(), number: str = Form()):
             },
         )
 
+        print(response.json())
+
         return "CORRECT!!!"
     else:
         return "wrong answer :("
