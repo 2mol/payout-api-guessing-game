@@ -93,7 +93,13 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
             response_body = response.json()
             print(response_body)
             err_msg = response_body.get("code", "")
-            # TODO: handle case where you had correct answer, but were too slow to win.
+
+            if err_msg == 'recipient-limit-exceeded':
+                return TEMPLATES.TemplateResponse(
+                    "result.html",
+                    {"request": request, "txt": "sorry, you were either too slow, or your wallet limit was reached :/"},
+                )
+
             return TEMPLATES.TemplateResponse(
                 "result.html",
                 {"request": request, "txt": err_msg},
