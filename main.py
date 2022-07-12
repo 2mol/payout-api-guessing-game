@@ -25,9 +25,9 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-def send_money(*, idempotency_key: str, json_data: Dict[str, str]):
+def send_money(*, api_key: str, idempotency_key: str, json_data: Dict[str, str]):
     headers = {
-        "authorization": f"Bearer {settings.api_key_sn}",
+        "authorization": f"Bearer {api_key}",
         # Already added when you pass json= but not when you pass data=
         # "content-type": "application/json",
         "idempotency-key": idempotency_key,
@@ -48,6 +48,7 @@ async def root_get(request: Request) -> dict:
 
 @app.post("/")
 async def root_post(request: Request, guess: int = Form(), name: str = Form(), number: str = Form()):
+    api_key = None
     try:
         p_number = phonenumbers.parse(number)
         if not phonenumbers.is_valid_number(p_number):
@@ -56,15 +57,28 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
                 {"request": request, "txt": "invalid phone number"},
             )
         f_number = phonenumbers.format_number(p_number, phonenumbers.PhoneNumberFormat.E164)
+
+        if p_number.country_code == 221:
+            api_key = settings.api_key_sn
+        elif p_number.country_code == 225:
+            api_key = settings.api_key_ci
     except:
         return TEMPLATES.TemplateResponse(
             "result.html",
             {"request": request, "txt": "invalid phone number"},
         )
+
+    if api_key is None:
+        return TEMPLATES.TemplateResponse(
+            "result.html",
+            {"request": request, "txt": "only SN and CI mobiles supported, sorry!"},
+        )
+
     if settings.correct_answer_min <= guess <= settings.correct_answer_max:
         response = send_money(
             # Using the number as the idempotency key. This way the same
             # wallet can't receive money twice:
+            api_key=api_key,
             idempotency_key=f_number,
             json_data = {
                 "currency": "XOF",
