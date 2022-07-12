@@ -100,7 +100,10 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
             )
         else:
             print(f"winner winner, chicken dinner: {name} - {f_number}")
-            return "You win :) Check your Wave app to see if you've received the money."
+            return TEMPLATES.TemplateResponse(
+                "result.html",
+                {"request": request, "txt": "You win :) Check your Wave app to see if you've received the money."},
+            )
     else:
         return TEMPLATES.TemplateResponse(
             "result.html",
