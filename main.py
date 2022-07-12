@@ -63,8 +63,6 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
 
 
 
-
-
     # ========================================================================
     #      IF THE ANSWER IS CORRECT, SEND MONEY TO THE PROVIDED NUMBER:
     # ========================================================================
@@ -86,8 +84,6 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
         )
 
         # ====================================================================
-
-
 
 
 
