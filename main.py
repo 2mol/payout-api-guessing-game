@@ -61,13 +61,6 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
             {"request": request, "txt": "only SN and CI mobiles supported, sorry!"},
         )
 
-    headers = {
-        "authorization": f"Bearer {api_key}",
-        # Already added when you pass json= but not when you pass data=
-        # "content-type": "application/json",
-        "idempotency-key": f_number,
-    }
-
 
 
 
@@ -79,12 +72,16 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
     if settings.correct_answer_min <= guess <= settings.correct_answer_max:
         response = requests.post(
             'https://api.wave.com/v1/payout',
-            headers = headers,
+            headers = {
+                "authorization": f"Bearer {api_key}",
+                "idempotency-key": f_number,
+            },
             json = {
                 "currency": "XOF",
                 "receive_amount": settings.prize_amount,
                 "name": name,
                 "mobile": f_number,
+                "client_reference": "all hands api demo",
             }
         )
 
