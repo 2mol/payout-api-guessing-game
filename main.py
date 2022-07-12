@@ -47,14 +47,20 @@ async def root_get(request: Request) -> dict:
 
 
 @app.post("/")
-async def root_post(guess: int = Form(), name: str = Form(), number: str = Form()):
+async def root_post(request: Request, guess: int = Form(), name: str = Form(), number: str = Form()):
     try:
         p_number = phonenumbers.parse(number)
         if not phonenumbers.is_valid_number(p_number):
-            return "invalid phone number"
+            return TEMPLATES.TemplateResponse(
+                "result.html",
+                {"request": request, "txt": "invalid phone number"},
+            )
         f_number = phonenumbers.format_number(p_number, phonenumbers.PhoneNumberFormat.E164)
     except:
-        return "invalid phone number"
+        return TEMPLATES.TemplateResponse(
+            "result.html",
+            {"request": request, "txt": "invalid phone number"},
+        )
     if settings.correct_answer_min <= guess <= settings.correct_answer_max:
         response = send_money(
             # Using the number as the idempotency key. This way the same
@@ -74,9 +80,15 @@ async def root_post(guess: int = Form(), name: str = Form(), number: str = Form(
             print(response_body)
             err_msg = response_body.get("code", "")
             # TODO: handle case where you had correct answer, but were too slow to win.
-            return f"sorry, something went wrong: {err_msg}"
+            return TEMPLATES.TemplateResponse(
+                "result.html",
+                {"request": request, "txt": err_msg},
+            )
         else:
             print(f"winner winner, chicken dinner: {name} - {f_number}")
             return "You win :) Check your Wave app to see if you've received the money."
     else:
-        return "wrong answer :("
+        return TEMPLATES.TemplateResponse(
+            "result.html",
+            {"request": request, "txt": "wrong answer :("},
+        )
