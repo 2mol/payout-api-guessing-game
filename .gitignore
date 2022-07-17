@@ -3,3 +3,5 @@ __pycache__/
 
 .envrc
 .direnv/
+
+database.db*

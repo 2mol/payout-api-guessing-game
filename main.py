@@ -1,5 +1,4 @@
-from typing import Dict
-
+import databases
 import asyncio
 import phonenumbers
 import requests
@@ -13,6 +12,9 @@ from pathlib import Path
 
 BASE_PATH = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates"))
+DATABASE_URL = "sqlite+aiosqlite:///database.db"
+
+database = databases.Database(DATABASE_URL)
 
 class Settings(BaseSettings):
     api_key_sn: str
@@ -25,6 +27,25 @@ settings = Settings()
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.on_event("startup")
+async def database_connect():
+    await database.connect()
+
+    pragmas = [
+        "PRAGMA journal_mode = WAL",
+        "PRAGMA synchronous  = NORMAL",
+        "PRAGMA cache_size   = -64000",
+        "PRAGMA busy_timeout = 5000",
+    ]
+
+    for pragma_query in pragmas:
+        await database.execute(query=pragma_query)
+
+
+@app.on_event("shutdown")
+async def database_disconnect():
+    await database.disconnect()
 
 
 @app.get("/")
@@ -122,8 +143,14 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
         )
 
 
-STREAM_DELAY = 1  # second
-RETRY_TIMEOUT = 15000  # milisecond
+STREAM_DELAY = 0.5  # seconds
+RETRY_TIMEOUT = 15000  # miliseconds
+
+
+# async def fetch_data():
+#     query = "SELECT * FROM data"
+#     results = await database.fetch_all(query=query)
+#     return results
 
 @app.get('/stream')
 async def message_stream(request: Request):
@@ -136,13 +163,22 @@ async def message_stream(request: Request):
             if await request.is_disconnected():
                 break
 
+            query = """
+                select data from data
+                order by id desc
+                limit 100;
+            """
+
+            rows = await database.fetch_all(query=query)
+            data = "\n".join([f"<div>{row[0]}</div>" for row in rows])
+
             # Checks for new messages and return them to client if any
             # if new_messages():
             yield {
                 "event": "message",
                 # "id": "message_id",
                 # "retry": RETRY_TIMEOUT,
-                "data": "<div>data</div>"
+                "data": data
             }
 
             await asyncio.sleep(STREAM_DELAY)
