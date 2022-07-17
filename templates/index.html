@@ -60,7 +60,7 @@
         </div>
         <script src="/static/htmx.min.js"></script>
         <script src="/static/sse.js"></script>
-        <div style="padding-left: 1rem;">
+        <div style="padding-left: 1rem; padding-bottom: 3rem;">
           <small>
             <div hx-ext="sse" sse-connect="/stream" sse-swap="message" hx-swap="afterbegin"></div>
             {% for msg in messages %}
