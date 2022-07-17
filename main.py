@@ -3,7 +3,7 @@ import asyncio
 import phonenumbers
 import random
 import requests
-from fastapi import FastAPI, Request, Form
+from fastapi import BackgroundTasks, FastAPI, Request, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseSettings
@@ -73,8 +73,26 @@ async def root_get(request: Request) -> dict:
     )
 
 
+async def post_message(message: str):
+    await database.execute(query="insert into data (data) values (:msg)", values={"msg": message})
+
+
+def win(request, background_tasks, name):
+    win_msg = f"{random.choice(PARTY_EMOJIS)} {name} wins, congratulations!"
+    background_tasks.add_task(post_message, message=win_msg)
+    return TEMPLATES.TemplateResponse(
+        "result.html",
+        {"request": request, "txt": "You win :) Check your Wave app to see if you've received the money."},
+    )
+
 @app.post("/")
-async def root_post(request: Request, guess: int = Form(), name: str = Form(), number: str = Form()):
+async def root_post(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    guess: int = Form(),
+    name: str = Form(),
+    number: str = Form(),
+):
     api_key = None
     try:
         p_number = phonenumbers.parse(number)
@@ -142,18 +160,21 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
                     "result.html",
                     {"request": request, "txt": "sorry, you were either too slow, or your wallet limit was reached :/"},
                 )
+            elif err_msg == 'idempotency-mismatch':
+                # HACK: if we have already sent some money, then just pretend it's
+                # a win. This way I can test the message queue better.
+                return win(request, background_tasks, name)
 
             return TEMPLATES.TemplateResponse(
                 "result.html",
                 {"request": request, "txt": err_msg},
             )
         else:
-            print(f"winner winner, chicken dinner: {name} - {f_number}")
-            return TEMPLATES.TemplateResponse(
-                "result.html",
-                {"request": request, "txt": "You win :) Check your Wave app to see if you've received the money."},
-            )
+            # print(f"winner winner, chicken dinner: {name} - {f_number}")
+            return win(request, background_tasks, name)
     else:
+        lose_msg = f"🫥 {name} made an incorrect guess."
+        background_tasks.add_task(post_message, message=lose_msg)
         return TEMPLATES.TemplateResponse(
             "result.html",
             {"request": request, "txt": "wrong answer :("},
@@ -180,8 +201,7 @@ async def message_stream(request: Request):
 
             if len(rows) > 0:
                 msg_data = "\n".join([
-                    # f"<div>{PARTY_EMOJIS[id % len(PARTY_EMOJIS)]} {data}</div>"
-                    f"<div>{random.choice(PARTY_EMOJIS)} {data}</div>"
+                    f"<div>{data}</div>"
                     for (id, data) in rows
                 ])
 
