@@ -59,6 +59,15 @@
         <div style="padding:0.5rem; display: flex; align-items: center; justify-content: center;">
           <h3><a href="https://quiz.bakdor.com">https://quiz.bakdor.com</a></h3>
         </div>
+        <script src="https://unpkg.com/htmx.org@1.8.0"></script>
+        <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
+        <!-- <button hx-get="/stream" hx-swap="outerHTML">
+          Click Me
+        </button> -->
+        <div hx-ext="sse" sse-connect="/stream" sse-swap="stream" hx-swap="afterbegin">
+          Contents of this box will be updated in real time
+          with every SSE message received
+        </div>
       </div>
     </article>
 
