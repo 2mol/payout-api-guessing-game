@@ -63,6 +63,9 @@
         <div style="padding-left: 1rem;">
           <small>
             <div hx-ext="sse" sse-connect="/stream" sse-swap="message" hx-swap="afterbegin"></div>
+            {% for msg in messages %}
+              <div>{{msg}}</div>
+          {% endfor %}
           </small>
         </div>
       </div>

@@ -56,9 +56,20 @@ async def database_disconnect():
 
 @app.get("/")
 async def root_get(request: Request) -> dict:
+    query = """
+        select data
+        from data
+        where has_been_broadcast
+        order by id desc
+        limit 100;
+    """
+
+    rows = await database.fetch_all(query=query)
+    messages = [data for (data,) in rows]
+
     return TEMPLATES.TemplateResponse(
         "index.html",
-        {"request": request},
+        {"request": request, "messages": messages},
     )
 
 
@@ -166,6 +177,7 @@ async def message_stream(request: Request):
             """
 
             rows = await database.fetch_all(query=query)
+
             if len(rows) > 0:
                 msg_data = "\n".join([
                     # f"<div>{PARTY_EMOJIS[id % len(PARTY_EMOJIS)]} {data}</div>"
