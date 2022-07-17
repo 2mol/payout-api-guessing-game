@@ -49,12 +49,14 @@ in {
     extraGroups = [ "wheel" ]; # Enable 'sudo' for the user.
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIsTKysbGk+ALtJbIOaBNmJVWLN91xLEG6VXmlYsp6UO 2mol"
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDV2ZAyC0ZAQNeL6fYWsuY3rMIOmS9EZhfjaUy97nw3kHSJ7YR14OsGuNLeaGmtNUpNWBhD/MrzJR3q6kmw5NoGzRkH6x9m0R5Jj37F0NW+fFbkuuBZQXfIl60BZ1r8tOcb0iAj8TbQ9+N95LhRk2VqSv8987c0WVC4KdgRF84y+d9KTVpeLxSQayapPiEBQUgaa/D7xVDNev5tgkFONuv/qzF+g9KVc/fbig/9Xpn2DQYxi4aaPD6BlCx8XEVQQb7tmyrQ0ueQhTYDUjTHEzn5hSYVC7iZJhJpcYgyU4iK3dBECOBtWlyvk4BbzDnIs7SmaTvqe7SnqEqARzw1FUcnUxhSg2eizkGkh5/Kz3LxPH0CpCuhQtf4gVh61EzNvXWkNh0WUrXlFyIxFuMnZ43KcXALW3oCTtGI6F23ZCoIOEIGsD2GeNvfYW9VuFSx4NsOq56RBargDrxwpY+rpjLRhCJgRW+oLEYh0KVQfAKONJm8IBeNbrZLrX8hSsBUfQ0="
     ];
     packages = with pkgs; [
       # Basics:
       git tmux htop wget
       fd fzf ripgrep
       direnv nix-direnv
+      sqlite-interactive
       # Networking:
       fail2ban tailscale
       caddy
