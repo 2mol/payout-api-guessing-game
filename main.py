@@ -143,7 +143,7 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
         )
 
 
-STREAM_DELAY = 0.5  # seconds
+STREAM_DELAY = 0.25  # seconds
 RETRY_TIMEOUT = 15000  # miliseconds
 
 PARTY_EMOJIS = ["🎊", "🎉", "🥳"]
@@ -151,9 +151,6 @@ PARTY_EMOJIS = ["🎊", "🎉", "🥳"]
 
 @app.get('/stream')
 async def message_stream(request: Request):
-    # def new_messages():
-    #     # Add logic here to check for new messages
-    #     yield 'Hello World'
     async def event_generator():
         while True:
             # If client closes connection, stop sending events
@@ -163,25 +160,28 @@ async def message_stream(request: Request):
             query = """
                 select id, data
                 from data
+                where not has_been_broadcast
                 order by id desc
                 limit 100;
             """
 
             rows = await database.fetch_all(query=query)
             if len(rows) > 0:
+                new_ids = [id for (id, _) in rows]
                 msg_data = "\n".join([
                     f"<div>{PARTY_EMOJIS[id % len(PARTY_EMOJIS)]} {data}</div>"
                     for (id, data) in rows
                 ])
 
-                # Checks for new messages and return them to client if any
-                # if new_messages():
                 yield {
                     "event": "message",
                     # "id": "message_id",
                     # "retry": RETRY_TIMEOUT,
                     "data": msg_data
                 }
+
+                # Mark the just broadcast IDs as ack'ed
+                # await database.execute_many(query=bla, values=new_ids)
 
             await asyncio.sleep(STREAM_DELAY)
 
