@@ -161,7 +161,7 @@ async def root_post(
                     {"request": request, "txt": "sorry, you were either too slow, or your wallet limit was reached :/"},
                 )
             elif err_msg == 'idempotency-mismatch':
-                # HACK: if we have already sent some money, then just pretend it's
+                # HACK: we have already sent some money, just pretend it's
                 # a win. This way I can test the message queue better.
                 return win(request, background_tasks, name)
 
@@ -173,7 +173,7 @@ async def root_post(
             # print(f"winner winner, chicken dinner: {name} - {f_number}")
             return win(request, background_tasks, name)
     else:
-        lose_msg = f"🫥 {name} made an incorrect guess."
+        lose_msg = f"🫥 {name} guessed wrong."
         background_tasks.add_task(post_message, message=lose_msg)
         return TEMPLATES.TemplateResponse(
             "result.html",
