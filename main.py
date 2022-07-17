@@ -146,11 +146,8 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
 STREAM_DELAY = 0.5  # seconds
 RETRY_TIMEOUT = 15000  # miliseconds
 
+PARTY_EMOJIS = ["🎊", "🎉", "🥳"]
 
-# async def fetch_data():
-#     query = "SELECT * FROM data"
-#     results = await database.fetch_all(query=query)
-#     return results
 
 @app.get('/stream')
 async def message_stream(request: Request):
@@ -164,22 +161,27 @@ async def message_stream(request: Request):
                 break
 
             query = """
-                select data from data
+                select id, data
+                from data
                 order by id desc
                 limit 100;
             """
 
             rows = await database.fetch_all(query=query)
-            data = "\n".join([f"<div>{row[0]}</div>" for row in rows])
+            if len(rows) > 0:
+                msg_data = "\n".join([
+                    f"<div>{PARTY_EMOJIS[id % len(PARTY_EMOJIS)]} {data}</div>"
+                    for (id, data) in rows
+                ])
 
-            # Checks for new messages and return them to client if any
-            # if new_messages():
-            yield {
-                "event": "message",
-                # "id": "message_id",
-                # "retry": RETRY_TIMEOUT,
-                "data": data
-            }
+                # Checks for new messages and return them to client if any
+                # if new_messages():
+                yield {
+                    "event": "message",
+                    # "id": "message_id",
+                    # "retry": RETRY_TIMEOUT,
+                    "data": msg_data
+                }
 
             await asyncio.sleep(STREAM_DELAY)
 

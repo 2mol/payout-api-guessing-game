@@ -53,15 +53,18 @@
           <input type="submit" value="Submit / Soumettre">
         </form>
       </div>
-      <!-- <div class="qrcode" style="border-radius: 0.25rem; border-width: 4px; border-color: rgb(0, 0, 0);"></div> -->
       <div style="padding: 3rem; padding-bottom: 0;">
         <img src="static/qr.svg" style="width:100%; border-style: solid; border-radius: 0.25rem; border-width: 1px; border-color: rgb(241 245 249); filter: drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08));">
         <div style="padding:0.5rem; display: flex; align-items: center; justify-content: center;">
           <h3><a href="https://quiz.bakdor.com">https://quiz.bakdor.com</a></h3>
         </div>
-        <script src="https://unpkg.com/htmx.org@1.8.0"></script>
-        <script src="https://unpkg.com/htmx.org@1.8.0/dist/ext/sse.js"></script>
-        <div hx-ext="sse" sse-connect="/stream" sse-swap="message" hx-swap="innerHTML"></div>
+        <script src="/static/htmx.min.js"></script>
+        <script src="/static/sse.js"></script>
+        <div style="padding-left: 1rem;">
+          <small>
+            <div hx-ext="sse" sse-connect="/stream" sse-swap="message" hx-swap="innerHTML"></div>
+          </small>
+        </div>
       </div>
     </article>
 
