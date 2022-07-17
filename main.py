@@ -1,6 +1,7 @@
 import databases
 import asyncio
 import phonenumbers
+import random
 import requests
 from fastapi import FastAPI, Request, Form
 from fastapi.staticfiles import StaticFiles
@@ -13,6 +14,11 @@ from pathlib import Path
 BASE_PATH = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates"))
 DATABASE_URL = "sqlite+aiosqlite:///database.db"
+
+STREAM_DELAY = 0.5  # seconds
+RETRY_TIMEOUT = 15000  # miliseconds
+
+PARTY_EMOJIS = ["🎊", "🎉", "🥳"]
 
 database = databases.Database(DATABASE_URL)
 
@@ -143,12 +149,6 @@ async def root_post(request: Request, guess: int = Form(), name: str = Form(), n
         )
 
 
-STREAM_DELAY = 0.25  # seconds
-RETRY_TIMEOUT = 15000  # miliseconds
-
-PARTY_EMOJIS = ["🎊", "🎉", "🥳"]
-
-
 @app.get('/stream')
 async def message_stream(request: Request):
     async def event_generator():
@@ -167,9 +167,9 @@ async def message_stream(request: Request):
 
             rows = await database.fetch_all(query=query)
             if len(rows) > 0:
-                new_ids = [id for (id, _) in rows]
                 msg_data = "\n".join([
-                    f"<div>{PARTY_EMOJIS[id % len(PARTY_EMOJIS)]} {data}</div>"
+                    # f"<div>{PARTY_EMOJIS[id % len(PARTY_EMOJIS)]} {data}</div>"
+                    f"<div>{random.choice(PARTY_EMOJIS)} {data}</div>"
                     for (id, data) in rows
                 ])
 
@@ -181,7 +181,9 @@ async def message_stream(request: Request):
                 }
 
                 # Mark the just broadcast IDs as ack'ed
-                # await database.execute_many(query=bla, values=new_ids)
+                query = "update data set has_been_broadcast=true where id = :id"
+                new_ids = [{"id": id} for (id, _) in rows]
+                await database.execute_many(query=query, values=new_ids)
 
             await asyncio.sleep(STREAM_DELAY)
 
