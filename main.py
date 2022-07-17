@@ -139,10 +139,10 @@ async def message_stream(request: Request):
             # Checks for new messages and return them to client if any
             # if new_messages():
             yield {
-                "event": "stream",
+                "event": "message",
                 # "id": "message_id",
                 # "retry": RETRY_TIMEOUT,
-                "data": "message_content"
+                "data": "<div>data</div>"
             }
 
             await asyncio.sleep(STREAM_DELAY)
