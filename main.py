@@ -77,8 +77,8 @@ async def post_message(message: str):
     await database.execute(query="insert into data (data) values (:msg)", values={"msg": message})
 
 
-def win(request, background_tasks, name):
-    win_msg = f"{random.choice(PARTY_EMOJIS)} {name} wins 1000 CFA!!"
+def win(request, background_tasks, name, win_amount):
+    win_msg = f"{random.choice(PARTY_EMOJIS)} {name} wins {win_amount} CFA!!"
     background_tasks.add_task(post_message, message=win_msg)
     return TEMPLATES.TemplateResponse(
         "result.html",
@@ -153,7 +153,7 @@ async def root_post(
 
 
         if response.ok:
-            return win(request, background_tasks, name)
+            return win(request, background_tasks, name, settings.prize_amount)
         else:
             response_body = response.json()
             print(response_body)
@@ -172,7 +172,7 @@ async def root_post(
             elif err_msg == 'idempotency-mismatch':
                 # HACK: we have already sent some money, just pretend it's
                 # a win. This way I can test the message queue better.
-                return win(request, background_tasks, name)
+                return win(request, background_tasks, name, settings.prize_amount)
 
             return TEMPLATES.TemplateResponse(
                 "result.html",
