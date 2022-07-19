@@ -137,7 +137,7 @@ async def root_post(
             'https://api.wave.com/v1/payout',
             headers = {
                 "authorization": f"Bearer {api_key}",
-                "idempotency-key": f_number,
+                "idempotency-key": mobile_number,
             },
             json = {
                 "mobile": mobile_number,
