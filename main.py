@@ -78,7 +78,7 @@ async def post_message(message: str):
 
 
 def win(request, background_tasks, name):
-    win_msg = f"{random.choice(PARTY_EMOJIS)} {name} wins, congratulations!"
+    win_msg = f"{random.choice(PARTY_EMOJIS)} {name} wins 1000 CFA!!"
     background_tasks.add_task(post_message, message=win_msg)
     return TEMPLATES.TemplateResponse(
         "result.html",
@@ -119,13 +119,20 @@ async def root_post(
             {"request": request, "txt": "only SN and CI mobiles supported, sorry!"},
         )
 
+    # some aliases to make the code example below more readable:
+    recipient_name = name
+    mobile_number = f_number
+    correct_answer_minimum = settings.correct_answer_min
+    correct_answer_maximum = settings.correct_answer_max
+
+
 
 
     # ========================================================================
     #      IF THE ANSWER IS CORRECT, SEND MONEY TO THE PROVIDED NUMBER:
     # ========================================================================
 
-    if settings.correct_answer_min <= guess <= settings.correct_answer_max:
+    if correct_answer_minimum <= guess <= correct_answer_maximum:
         response = requests.post(
             'https://api.wave.com/v1/payout',
             headers = {
@@ -133,19 +140,21 @@ async def root_post(
                 "idempotency-key": f_number,
             },
             json = {
-                "currency": "XOF",
+                "mobile": mobile_number,
+                "name": recipient_name,
                 "receive_amount": settings.prize_amount,
-                "name": name,
-                "mobile": f_number,
-                "client_reference": "all hands api demo",
+                "currency": "XOF",
             }
         )
+
 
         # ====================================================================
 
 
 
-        if not response.ok:
+        if response.ok:
+            return win(request, background_tasks, name)
+        else:
             response_body = response.json()
             print(response_body)
             err_msg = response_body.get("code", "")
@@ -169,9 +178,6 @@ async def root_post(
                 "result.html",
                 {"request": request, "txt": err_msg},
             )
-        else:
-            # print(f"winner winner, chicken dinner: {name} - {f_number}")
-            return win(request, background_tasks, name)
     else:
         lose_msg = f"🫥 {name} guessed wrong."
         background_tasks.add_task(post_message, message=lose_msg)
